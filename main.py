@@ -9,7 +9,10 @@ from PyQt5.QtGui import *
 class Snip(QMainWindow):
     def __init__(self, screen) -> None:
         QMainWindow.__init__(self)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowOpacity(.3)
         self.setGeometry(screen)
+
 
 
 class TrayIcon(QSystemTrayIcon):
