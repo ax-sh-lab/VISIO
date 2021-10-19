@@ -1,9 +1,16 @@
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMainWindow
+from PyQt5.QtCore import Qt 
 
 from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import * 
+
+class Snip(QMainWindow):
+    def __init__(self, screen) -> None:
+        QMainWindow.__init__(self)
+        self.setGeometry(screen)
+
 
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, app) -> None:
@@ -14,6 +21,8 @@ class TrayIcon(QSystemTrayIcon):
         self.setVisible(True)
         self.activated.connect(self.systemIcon)
         self.screen = app.desktop().screenGeometry()
+        self.snip = Snip(self.screen)
+        self.toggleState = False
         
     def systemIcon(self, reason):
         # QSystemTrayIcon.Unknown	    0	Unknown reason
@@ -24,10 +33,18 @@ class TrayIcon(QSystemTrayIcon):
         # QSystemTrayIcon.Trigger	    3	The system tray entry was clicked
         # QSystemTrayIcon.MiddleClick	4	The system tray entry was clicked with the middle mouse button
         if reason == QSystemTrayIcon.Trigger:
-            print('Clicked', self.screen)
+            self.toggle()
             return 
         if reason == QSystemTrayIcon.Context:
             print("Right clicked")
+    
+    def toggle(self):
+        
+        if self.toggleState:
+            self.snip.show()
+        else:
+            self.snip.hide()
+        self.toggleState = not self.toggleState
 
 
 class App(QApplication):
