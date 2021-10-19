@@ -15,7 +15,7 @@ path = Path(__file__).parent
 class SnipBase(QMainWindow):
     def __init__(self, screen) -> None:
         QMainWindow.__init__(self)
-        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint )
         self.setWindowOpacity(.3)
         self.setGeometry(screen)
         self.begin = QPoint()
