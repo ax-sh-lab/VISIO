@@ -1,17 +1,70 @@
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMainWindow
-from PyQt5.QtCore import Qt 
+from PyQt5.QtCore import Qt, QPoint 
+from PyQt5 import QtGui, QtCore
+from PIL import ImageGrab
+from pathlib import Path
+from time import time 
 
-from PyQt5.QtWidgets import * 
-from PyQt5.QtGui import * 
+# from PyQt5.QtWidgets import * 
+# from PyQt5.QtGui import *
 
-class Snip(QMainWindow):
+path = Path(__file__).parent
+
+class SnipBase(QMainWindow):
     def __init__(self, screen) -> None:
         QMainWindow.__init__(self)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowOpacity(.3)
         self.setGeometry(screen)
+        self.begin = QPoint()
+        self.end = QPoint()
+
+        self.border_color = QtGui.QColor('black')
+        self.background_color = QtGui.QColor(128, 128, 255, 128)
+
+        print('Capture the screen...')
+
+    def paintEvent(self, event):
+        qp = QtGui.QPainter(self)
+        qp.setPen(QtGui.QPen(self.border_color, 2))
+        qp.setBrush(self.background_color)
+        qp.drawRect(QtCore.QRect(self.begin, self.end))
+
+    def mousePressEvent(self, event):
+        self.begin = event.pos()
+        self.end = self.begin
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        self.end = event.pos()
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        self.close()
+        self.select_region((
+            min(self.begin.x(), self.end.x()),# x1
+            min(self.begin.y(), self.end.y()),# y1
+            max(self.begin.x(), self.end.x()),# x2,
+            max(self.begin.y(), self.end.y()) # y2
+        ))
+
+class Snip(SnipBase):
+    def validate(self, img):
+        pass
+    def select_region(self, geometry):
+        img = ImageGrab.grab(bbox=geometry)
+        self.validate(img)
+        folder = path / 'shots'
+        folder.mkdir(exist_ok=True)
+        date = int(time())
+        name = f'visio-{date}.png'
+        name = folder / name 
+        img.save(name)
+        print("Saved as", name)
+
+
 
 
 
