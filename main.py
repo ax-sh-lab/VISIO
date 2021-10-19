@@ -6,13 +6,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import * 
 
 class TrayIcon(QSystemTrayIcon):
-    def __init__(self) -> None:
+    def __init__(self, app) -> None:
         QSystemTrayIcon.__init__(self)
         icon = QIcon("assets/icon.svg")
         self.setIcon(icon)
 
         self.setVisible(True)
         self.activated.connect(self.systemIcon)
+        self.screen = app.desktop().screenGeometry()
         
     def systemIcon(self, reason):
         # QSystemTrayIcon.Unknown	    0	Unknown reason
@@ -23,7 +24,7 @@ class TrayIcon(QSystemTrayIcon):
         # QSystemTrayIcon.Trigger	    3	The system tray entry was clicked
         # QSystemTrayIcon.MiddleClick	4	The system tray entry was clicked with the middle mouse button
         if reason == QSystemTrayIcon.Trigger:
-            print('Clicked')
+            print('Clicked', self.screen)
             return 
         if reason == QSystemTrayIcon.Context:
             print("Right clicked")
@@ -38,7 +39,7 @@ class App(QApplication):
 
 def main():
     app = App([])
-    tray = TrayIcon()
+    tray = TrayIcon(app)
     # # Create the menu
     # menu = QMenu()
     # action = QAction("A menu item")
