@@ -15,8 +15,18 @@ class TrayIcon(QSystemTrayIcon):
         self.activated.connect(self.systemIcon)
         
     def systemIcon(self, reason):
+        # QSystemTrayIcon.Unknown	    0	Unknown reason
+        # QSystemTrayIcon.Context	    1	The context menu for the system tray entry was requested
+        # QSystemTrayIcon.DoubleClick	2	The system tray entry was double clicked. # Note: On macOS, a double click will only be emitted if no context menu is set, since the menu opens on mouse press
+
+        # Constant	Value	Description
+        # QSystemTrayIcon.Trigger	    3	The system tray entry was clicked
+        # QSystemTrayIcon.MiddleClick	4	The system tray entry was clicked with the middle mouse button
         if reason == QSystemTrayIcon.Trigger:
             print('Clicked')
+            return 
+        if reason == QSystemTrayIcon.Context:
+            print("Right clicked")
 
 
 class App(QApplication):
